@@ -12,7 +12,7 @@ struct Node { int left = -1, right = -1, sym = -1; };
 class BitReader {
     const vector<uint8_t>& buf_;
     size_t byte_ = 0;
-    int    bit_  = 0;               // 0..7
+    int bit_ = 0;               
 public:
     explicit BitReader(const vector<uint8_t>& b) : buf_(b) {}
     bool read_bit(bool& bit) {
@@ -37,9 +37,19 @@ void decode_file(const string& dataIn,
         dict >> sym >> len >> code;
         int v = 0;
         for (char b : code) {
-            int& next = (b == '0') ? trie[v].left : trie[v].right;
-            if (next == -1) { next = trie.size(); trie.emplace_back(); }
-            v = next;
+            if (b == '0') {
+                if (trie[v].left == -1) {
+                    trie[v].left = static_cast<int>(trie.size());
+                    trie.emplace_back();
+                }
+                v = trie[v].left;
+            } else { // '1'
+                if (trie[v].right == -1) {
+                    trie[v].right = static_cast<int>(trie.size());
+                    trie.emplace_back();
+                }
+                v = trie[v].right;
+            }    
         }
         trie[v].sym = sym;
     }
