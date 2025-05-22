@@ -66,7 +66,18 @@ void encode_file(const string& inName,
     // 2. строим коды
     vector<pair<uint8_t,uint32_t>> sym;
     for (int i = 0; i < 256; ++i) if (freq[i]) sym.push_back({uint8_t(i),freq[i]});
-    if (sym.empty()) throw runtime_error("empty input");
+    if (sym.empty()) {
+        std::ofstream dict(dictOut);
+        dict << 0 << '\n';                 // ноль символов
+
+        std::ofstream out(dataOut, std::ios::binary);
+        uint32_t orig = 0;
+        out.put(orig & 0xFF);
+        out.put((orig >> 8)  & 0xFF);
+        out.put((orig >> 16) & 0xFF);
+        out.put((orig >> 24) & 0xFF);
+        return;                            // больше нечего писать
+    } 
     sort(sym.begin(), sym.end(),
          [](auto& x, auto& y){ return x.second > y.second; });
 
