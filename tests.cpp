@@ -1,4 +1,4 @@
-#define CATCH_CONFIG_DISABLE
+//#define CATCH_CONFIG_DISABLE
 #include "catch2/catch_all.hpp"
 
 #include <random>
